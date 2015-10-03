@@ -73,24 +73,24 @@ object DequeueSpec extends Properties("Dequeue") {
     xs == l.reverse
   }
 
-  property("snoc then toIlist") = forAll { (xs: List[Int]) =>
+  property("snoc then toLst") = forAll { (xs: List[Int]) =>
     val q = snocL(xs, empty)
-    q.toIList == IList.fromList(xs)
+    q.toLst == Lst.fromIterable(xs)
   }
 
-  property("cons then toIlist") = forAll { (xs: List[Int]) =>
+  property("cons then toLst") = forAll { (xs: List[Int]) =>
     val q = consL(xs, empty)
-    q.toIList == IList.fromList(xs).reverse
+    q.toLst == Lst.fromIterable(xs).reverse
   }
 
-  property("snoc then toBackIlist") = forAll { (xs: List[Int]) =>
+  property("snoc then toBackLst") = forAll { (xs: List[Int]) =>
     val q = snocL(xs, empty)
-    q.toBackIList == IList.fromList(xs).reverse
+    q.toBackLst == Lst.fromIterable(xs).reverse
   }
 
-  property("cons then toBackIlist") = forAll { (xs: List[Int]) =>
+  property("cons then toBackLst") = forAll { (xs: List[Int]) =>
     val q = consL(xs, empty)
-    q.toBackIList == IList.fromList(xs)
+    q.toBackLst == Lst.fromIterable(xs)
   }
 
   implicit def genQ[A: Arbitrary]: Arbitrary[Dequeue[A]] = Arbitrary(
@@ -100,9 +100,9 @@ object DequeueSpec extends Properties("Dequeue") {
     } yield consL(l, snocL(r, empty)))
 
   property("foldLeft") = forAll { (q: Dequeue[Int]) =>
-    q.foldLeft[IList[Int]](INil())((xs,x) => ICons(x, xs)) === q.toBackIList
+    q.foldLeft[Lst[Int]](El())((xs,x) => Nel(x, xs)) === q.toBackLst
   }
-  property("foldRIght") = forAll { (q: Dequeue[Int]) =>
-    q.foldRight[IList[Int]](Eval.now(INil()))((x,xs) => xs.map(xs => ICons(x,xs))).value === q.toIList
+  property("foldRight") = forAll { (q: Dequeue[Int]) =>
+    q.foldRight[Lst[Int]](Eval.now(El()))((x,xs) => xs.map(xs => Nel(x,xs))).value === q.toLst
   }
 }
